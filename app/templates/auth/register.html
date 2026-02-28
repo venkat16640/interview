@@ -1,0 +1,548 @@
+{% extends "base.html" %}
+
+{% block title %}Create Account — InterviewAI Pro{% endblock %}
+
+{% block extra_css %}
+<style>
+    .auth-page {
+        min-height: calc(100vh - 120px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2.5rem 1rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .auth-page::before {
+        content: '';
+        position: absolute;
+        top: -200px;
+        right: -200px;
+        width: 600px;
+        height: 600px;
+        background: radial-gradient(circle, rgba(139, 92, 246, 0.12) 0%, transparent 65%);
+        pointer-events: none;
+    }
+
+    .auth-page::after {
+        content: '';
+        position: absolute;
+        bottom: -150px;
+        left: -150px;
+        width: 500px;
+        height: 500px;
+        background: radial-gradient(circle, rgba(6, 182, 212, 0.09) 0%, transparent 65%);
+        pointer-events: none;
+    }
+
+    .auth-split {
+        display: flex;
+        width: 100%;
+        max-width: 920px;
+        background: rgba(17, 24, 39, 0.75);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 28px;
+        overflow: hidden;
+        backdrop-filter: blur(20px);
+        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5), 0 0 80px rgba(99, 102, 241, 0.06);
+        position: relative;
+        animation: authCardIn 0.5s ease-out;
+    }
+
+    .auth-split::before {
+        content: '';
+        position: absolute;
+        top: -1px;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(90deg, #6366f1, #8b5cf6, #06b6d4);
+    }
+
+    @keyframes authCardIn {
+        from {
+            opacity: 0;
+            transform: translateY(28px) scale(0.97);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+
+    /* Left promo */
+    .auth-promo {
+        width: 40%;
+        flex-shrink: 0;
+        background: linear-gradient(145deg, rgba(99, 102, 241, 0.18) 0%, rgba(139, 92, 246, 0.12) 50%, rgba(6, 182, 212, 0.07) 100%);
+        border-right: 1px solid rgba(255, 255, 255, 0.07);
+        padding: 3rem 2.25rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .auth-promo::before {
+        content: '';
+        position: absolute;
+        top: -80px;
+        left: -60px;
+        width: 280px;
+        height: 280px;
+        background: radial-gradient(circle, rgba(99, 102, 241, 0.18) 0%, transparent 65%);
+        pointer-events: none;
+    }
+
+    .promo-logo {
+        width: 56px;
+        height: 56px;
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.6rem;
+        box-shadow: 0 8px 24px rgba(99, 102, 241, 0.4);
+        margin-bottom: 2rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    .promo-headline {
+        font-family: 'Outfit', sans-serif;
+        font-weight: 800;
+        font-size: 1.6rem;
+        line-height: 1.25;
+        color: #f1f5f9;
+        margin-bottom: 0.75rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    .promo-headline span {
+        background: linear-gradient(135deg, #a5b4fc, #67e8f9);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .promo-desc {
+        font-size: 0.87rem;
+        color: #94a3b8;
+        line-height: 1.7;
+        margin-bottom: 2rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    .stat-row {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+        position: relative;
+        z-index: 1;
+    }
+
+    .stat-chip {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 12px;
+        padding: 0.75rem 1rem;
+        text-align: center;
+        flex: 1;
+        min-width: 80px;
+    }
+
+    .stat-chip .sc-val {
+        font-family: 'Outfit', sans-serif;
+        font-weight: 800;
+        font-size: 1.4rem;
+        background: linear-gradient(135deg, #a5b4fc, #67e8f9);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .stat-chip .sc-label {
+        font-size: 0.7rem;
+        color: #64748b;
+        font-weight: 600;
+        margin-top: 0.15rem;
+    }
+
+    /* Right form */
+    .auth-form-panel {
+        flex: 1;
+        padding: 2.5rem 2.75rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .perks-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .perk-item {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.78rem;
+        color: #64748b;
+    }
+
+    .perk-item i {
+        color: #10b981;
+        font-size: 0.82rem;
+    }
+
+    .auth-title {
+        font-family: 'Outfit', sans-serif;
+        font-weight: 800;
+        font-size: 1.65rem;
+        color: #f1f5f9;
+        margin-bottom: 0.3rem;
+    }
+
+    .auth-subtitle {
+        font-size: 0.87rem;
+        color: #64748b;
+        margin-bottom: 1.75rem;
+    }
+
+    .form-group-custom {
+        margin-bottom: 1.1rem;
+    }
+
+    .form-label-custom {
+        display: block;
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: #94a3b8;
+        margin-bottom: 0.4rem;
+        letter-spacing: 0.02em;
+    }
+
+    .input-wrapper {
+        position: relative;
+    }
+
+    .input-icon {
+        position: absolute;
+        left: 0.9rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #4b5563;
+        font-size: 0.95rem;
+        pointer-events: none;
+    }
+
+    .form-input-custom {
+        width: 100%;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 11px;
+        padding: 0.8rem 1rem 0.8rem 2.45rem;
+        font-size: 0.93rem;
+        color: #f1f5f9;
+        font-family: 'Inter', sans-serif;
+        transition: all 0.25s;
+        outline: none;
+    }
+
+    .form-input-custom:focus {
+        background: rgba(99, 102, 241, 0.07);
+        border-color: rgba(99, 102, 241, 0.5);
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
+    }
+
+    .form-input-custom::placeholder {
+        color: #374151;
+    }
+
+    .form-hint {
+        font-size: 0.74rem;
+        color: #475569;
+        margin-top: 0.3rem;
+    }
+
+    .password-strength {
+        margin-top: 0.4rem;
+        height: 3px;
+        background: rgba(255, 255, 255, 0.06);
+        border-radius: 4px;
+        overflow: hidden;
+    }
+
+    .password-strength-bar {
+        height: 100%;
+        border-radius: 4px;
+        width: 0%;
+        transition: width 0.4s, background 0.4s;
+    }
+
+    .btn-auth-submit {
+        width: 100%;
+        margin-top: 0.25rem;
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        color: white;
+        border: none;
+        border-radius: 11px;
+        padding: 0.92rem;
+        font-size: 0.97rem;
+        font-weight: 700;
+        font-family: 'Inter', sans-serif;
+        cursor: pointer;
+        transition: all 0.3s;
+        box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .btn-auth-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px rgba(99, 102, 241, 0.55);
+    }
+
+    .btn-auth-submit:active {
+        transform: translateY(0);
+    }
+
+    .auth-divider {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin: 1.4rem 0;
+    }
+
+    .auth-divider::before,
+    .auth-divider::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: rgba(255, 255, 255, 0.07);
+    }
+
+    .auth-divider span {
+        font-size: 0.78rem;
+        color: #475569;
+        font-weight: 500;
+    }
+
+    .auth-footer-text {
+        text-align: center;
+        font-size: 0.86rem;
+        color: #475569;
+    }
+
+    .auth-link {
+        color: #818cf8;
+        text-decoration: none;
+        font-weight: 600;
+        transition: color 0.2s;
+    }
+
+    .auth-link:hover {
+        color: #a5b4fc;
+        text-decoration: underline;
+    }
+
+    @media (max-width: 700px) {
+        .auth-promo {
+            display: none;
+        }
+
+        .auth-split {
+            max-width: 460px;
+        }
+
+        .auth-form-panel {
+            padding: 2.25rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+    <div class="auth-split">
+
+        <!-- Left Promo Panel -->
+        <div class="auth-promo">
+            <div class="promo-logo">🚀</div>
+            <div class="promo-headline">Land Your<br><span>Dream Job</span></div>
+            <p class="promo-desc">Join thousands of candidates who use InterviewAI to ace technical interviews with
+                confidence.</p>
+            <div class="stat-row">
+                <div class="stat-chip">
+                    <div class="sc-val">3</div>
+                    <div class="sc-label">Interview<br>Rounds</div>
+                </div>
+                <div class="stat-chip">
+                    <div class="sc-val">AI</div>
+                    <div class="sc-label">Real-time<br>Feedback</div>
+                </div>
+                <div class="stat-chip">
+                    <div class="sc-val">PDF</div>
+                    <div class="sc-label">Full<br>Report</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Form Panel -->
+        <div class="auth-form-panel">
+            <h1 class="auth-title">Create Account</h1>
+            <p class="auth-subtitle">Start your interview prep journey today — it's free</p>
+
+            <div class="perks-row">
+                <div class="perk-item"><i class="bi bi-check-circle-fill"></i> AI-powered questions</div>
+                <div class="perk-item"><i class="bi bi-check-circle-fill"></i> Emotion analytics</div>
+                <div class="perk-item"><i class="bi bi-check-circle-fill"></i> PDF report</div>
+                <div class="perk-item"><i class="bi bi-check-circle-fill"></i> 3 full rounds</div>
+            </div>
+
+            <form method="POST" action="{{ url_for('auth.register') }}" autocomplete="on" id="registerForm">
+                <!-- CSRF Token -->
+                <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+                <div class="form-group-custom">
+                    <label class="form-label-custom" for="username">Username <span
+                            style="color:#64748b;font-weight:400;font-size:0.75rem;">(3–30 chars,
+                            letters/numbers/_)</span></label>
+                    <div class="input-wrapper">
+                        <i class="bi bi-person-fill input-icon"></i>
+                        <input type="text" class="form-input-custom" id="username" name="username"
+                            placeholder="Choose a username" autocomplete="username" minlength="3" maxlength="30"
+                            pattern="[a-zA-Z0-9_]+" required>
+                    </div>
+                </div>
+
+                <div class="form-group-custom">
+                    <label class="form-label-custom" for="email">Email Address</label>
+                    <div class="input-wrapper">
+                        <i class="bi bi-envelope-fill input-icon"></i>
+                        <input type="email" class="form-input-custom" id="email" name="email"
+                            placeholder="your@email.com" autocomplete="email" required>
+                    </div>
+                </div>
+
+                <div class="form-group-custom">
+                    <label class="form-label-custom" for="password">
+                        Password
+                        <span id="pwStrengthLabel" style="float:right;font-weight:400;"></span>
+                    </label>
+                    <div class="input-wrapper">
+                        <i class="bi bi-lock-fill input-icon"></i>
+                        <input type="password" class="form-input-custom" id="password" name="password"
+                            placeholder="Min 8 chars · A-z · 0-9 · Special" autocomplete="new-password" minlength="8"
+                            required>
+                    </div>
+                    <div class="password-strength">
+                        <div class="password-strength-bar" id="pwBar"></div>
+                    </div>
+                    <div class="form-hint" id="pwHint">Must contain uppercase, lowercase, number &amp; special character
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-auth-submit" id="registerBtn">
+                    <i class="bi bi-shield-lock-fill"></i> Create Secure Account
+                </button>
+            </form>
+
+            <div class="auth-divider"><span>Already have an account?</span></div>
+
+            <div class="auth-footer-text">
+                <a class="auth-link" href="{{ url_for('auth.login') }}">← Sign in instead</a>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    (function () {
+        'use strict';
+        const pwInput = document.getElementById('password');
+        const pwBar = document.getElementById('pwBar');
+        const pwLabel = document.getElementById('pwStrengthLabel');
+        const pwHint = document.getElementById('pwHint');
+
+        function scorePassword(val) {
+            let score = 0;
+            const checks = {
+                length: val.length >= 8,
+                upper: /[A-Z]/.test(val),
+                lower: /[a-z]/.test(val),
+                digit: /[0-9]/.test(val),
+                special: /[^A-Za-z0-9]/.test(val),
+                long: val.length >= 12,
+            };
+            score = Object.values(checks).filter(Boolean).length;
+
+            // Build hint
+            const missing = [];
+            if (!checks.upper) missing.push('uppercase letter');
+            if (!checks.lower) missing.push('lowercase letter');
+            if (!checks.digit) missing.push('number');
+            if (!checks.special) missing.push('special character (!@#$%…)');
+            if (!checks.length) missing.push('at least 8 characters');
+            pwHint.textContent = missing.length
+                ? 'Still needed: ' + missing.join(', ')
+                : '✓ Password meets all requirements';
+            pwHint.style.color = missing.length ? '#f97316' : '#10b981';
+
+            return Math.min(score, 5);
+        }
+
+        const levels = [
+            { w: '0%', c: 'transparent', t: '' },
+            { w: '20%', c: '#ef4444', t: '<span style="color:#ef4444">Very Weak</span>' },
+            { w: '40%', c: '#f97316', t: '<span style="color:#f97316">Weak</span>' },
+            { w: '60%', c: '#f59e0b', t: '<span style="color:#f59e0b">Fair</span>' },
+            { w: '80%', c: '#6366f1', t: '<span style="color:#6366f1">Good</span>' },
+            { w: '100%', c: '#10b981', t: '<span style="color:#10b981">Strong ✓</span>' },
+        ];
+
+        pwInput.addEventListener('input', function () {
+            const lvl = scorePassword(this.value);
+            pwBar.style.width = levels[lvl].w;
+            pwBar.style.background = levels[lvl].c;
+            pwLabel.innerHTML = levels[lvl].t;
+        });
+
+        document.getElementById('registerForm').addEventListener('submit', function (e) {
+            const val = pwInput.value;
+            const ok = val.length >= 8 && /[A-Z]/.test(val) && /[a-z]/.test(val)
+                && /[0-9]/.test(val) && /[^A-Za-z0-9]/.test(val);
+            if (!ok) {
+                e.preventDefault();
+                pwHint.style.color = '#ef4444';
+                pwInput.style.borderColor = 'rgba(239,68,68,0.6)';
+                pwInput.focus();
+                return;
+            }
+            const btn = document.getElementById('registerBtn');
+            btn.innerHTML = '<span style="width:16px;height:16px;border:2px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;display:inline-block;animation:spin 0.7s linear infinite;"></span> Creating Account...';
+            btn.disabled = true;
+        });
+    })();
+</script>
+<style>
+    @keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+</style>
+{% endblock %}

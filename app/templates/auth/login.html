@@ -1,0 +1,536 @@
+{% extends "base.html" %}
+
+{% block title %}Sign In — InterviewAI Pro{% endblock %}
+
+{% block extra_css %}
+<style>
+    .auth-page {
+        min-height: calc(100vh - 120px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2.5rem 1rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Ambient glows */
+    .auth-page::before {
+        content: '';
+        position: absolute;
+        top: -200px;
+        left: -200px;
+        width: 600px;
+        height: 600px;
+        background: radial-gradient(circle, rgba(99, 102, 241, 0.12) 0%, transparent 65%);
+        pointer-events: none;
+    }
+
+    .auth-page::after {
+        content: '';
+        position: absolute;
+        bottom: -150px;
+        right: -150px;
+        width: 500px;
+        height: 500px;
+        background: radial-gradient(circle, rgba(139, 92, 246, 0.1) 0%, transparent 65%);
+        pointer-events: none;
+    }
+
+    .auth-split {
+        display: flex;
+        width: 100%;
+        max-width: 900px;
+        background: rgba(17, 24, 39, 0.75);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 28px;
+        overflow: hidden;
+        backdrop-filter: blur(20px);
+        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5), 0 0 80px rgba(99, 102, 241, 0.06);
+        position: relative;
+        animation: authCardIn 0.5s ease-out;
+    }
+
+    .auth-split::before {
+        content: '';
+        position: absolute;
+        top: -1px;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(90deg, #6366f1, #8b5cf6, #06b6d4);
+    }
+
+    @keyframes authCardIn {
+        from {
+            opacity: 0;
+            transform: translateY(28px) scale(0.97);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+
+    /* Left promo panel */
+    .auth-promo {
+        width: 42%;
+        flex-shrink: 0;
+        background: linear-gradient(145deg, rgba(99, 102, 241, 0.18) 0%, rgba(139, 92, 246, 0.12) 40%, rgba(6, 182, 212, 0.08) 100%);
+        border-right: 1px solid rgba(255, 255, 255, 0.07);
+        padding: 3rem 2.5rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .auth-promo::before {
+        content: '';
+        position: absolute;
+        top: -80px;
+        right: -80px;
+        width: 300px;
+        height: 300px;
+        background: radial-gradient(circle, rgba(99, 102, 241, 0.2) 0%, transparent 65%);
+    }
+
+    .auth-promo::after {
+        content: '';
+        position: absolute;
+        bottom: -60px;
+        left: -60px;
+        width: 250px;
+        height: 250px;
+        background: radial-gradient(circle, rgba(6, 182, 212, 0.12) 0%, transparent 65%);
+    }
+
+    .promo-logo {
+        width: 56px;
+        height: 56px;
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.6rem;
+        box-shadow: 0 8px 24px rgba(99, 102, 241, 0.4);
+        margin-bottom: 2rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    .promo-headline {
+        font-family: 'Outfit', sans-serif;
+        font-weight: 800;
+        font-size: 1.7rem;
+        line-height: 1.2;
+        color: #f1f5f9;
+        margin-bottom: 0.75rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    .promo-headline span {
+        background: linear-gradient(135deg, #a5b4fc, #67e8f9);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .promo-desc {
+        font-size: 0.88rem;
+        color: #94a3b8;
+        line-height: 1.7;
+        margin-bottom: 2rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    .promo-features {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        position: relative;
+        z-index: 1;
+    }
+
+    .promo-features li {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-size: 0.85rem;
+        color: #cbd5e1;
+        margin-bottom: 0.9rem;
+    }
+
+    .promo-features li .pf-dot {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.85rem;
+        flex-shrink: 0;
+    }
+
+    /* Right form panel */
+    .auth-form-panel {
+        flex: 1;
+        padding: 3rem 2.75rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .auth-header {
+        margin-bottom: 2rem;
+    }
+
+    .auth-title {
+        font-family: 'Outfit', sans-serif;
+        font-weight: 800;
+        font-size: 1.65rem;
+        color: #f1f5f9;
+        margin-bottom: 0.35rem;
+    }
+
+    .auth-subtitle {
+        font-size: 0.87rem;
+        color: #64748b;
+    }
+
+    .form-group-custom {
+        margin-bottom: 1.2rem;
+    }
+
+    .form-label-custom {
+        display: block;
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: #94a3b8;
+        margin-bottom: 0.45rem;
+        letter-spacing: 0.02em;
+    }
+
+    .input-wrapper {
+        position: relative;
+    }
+
+    .input-icon {
+        position: absolute;
+        left: 0.9rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #4b5563;
+        font-size: 0.95rem;
+        pointer-events: none;
+    }
+
+    .form-input-custom {
+        width: 100%;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 11px;
+        padding: 0.8rem 1rem 0.8rem 2.45rem;
+        font-size: 0.93rem;
+        color: #f1f5f9;
+        font-family: 'Inter', sans-serif;
+        transition: all 0.25s ease;
+        outline: none;
+    }
+
+    .form-input-custom:focus {
+        background: rgba(99, 102, 241, 0.07);
+        border-color: rgba(99, 102, 241, 0.5);
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
+    }
+
+    .form-input-custom::placeholder {
+        color: #374151;
+    }
+
+    .btn-auth-submit {
+        width: 100%;
+        margin-top: 0.25rem;
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        color: white;
+        border: none;
+        border-radius: 11px;
+        padding: 0.92rem;
+        font-size: 0.97rem;
+        font-weight: 700;
+        font-family: 'Inter', sans-serif;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .btn-auth-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px rgba(99, 102, 241, 0.55);
+    }
+
+    .btn-auth-submit:active {
+        transform: translateY(0);
+    }
+
+    .auth-divider {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin: 1.5rem 0;
+    }
+
+    .auth-divider::before,
+    .auth-divider::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: rgba(255, 255, 255, 0.07);
+    }
+
+    .auth-divider span {
+        font-size: 0.78rem;
+        color: #475569;
+        font-weight: 500;
+    }
+
+    .auth-footer-text {
+        text-align: center;
+        font-size: 0.86rem;
+        color: #475569;
+    }
+
+    .auth-link {
+        color: #818cf8;
+        text-decoration: none;
+        font-weight: 600;
+        transition: color 0.2s;
+    }
+
+    .auth-link:hover {
+        color: #a5b4fc;
+        text-decoration: underline;
+    }
+
+    .auth-security-note {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: rgba(16, 185, 129, 0.06);
+        border: 1px solid rgba(16, 185, 129, 0.15);
+        border-radius: 9px;
+        padding: 0.6rem 0.85rem;
+        margin-bottom: 1.5rem;
+        font-size: 0.8rem;
+        color: #6ee7b7;
+    }
+
+    .lockout-banner {
+        display: none;
+        align-items: center;
+        gap: 0.6rem;
+        background: rgba(239, 68, 68, 0.1);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        border-radius: 9px;
+        padding: 0.75rem 1rem;
+        margin-bottom: 1.2rem;
+        font-size: 0.83rem;
+        color: #fca5a5;
+        animation: lockedPulse 2s ease infinite;
+    }
+    .lockout-banner.active { display: flex; }
+    @keyframes lockedPulse {
+        0%,100% { border-color: rgba(239,68,68,0.3); }
+        50%      { border-color: rgba(239,68,68,0.7); }
+    }
+    .attempt-warning {
+        font-size:0.78rem;
+        color:#f97316;
+        margin-top:0.35rem;
+        display:none;
+    }
+
+    @media (max-width: 680px) {
+        .auth-promo {
+            display: none;
+        }
+
+        .auth-split {
+            max-width: 440px;
+        }
+
+        .auth-form-panel {
+            padding: 2.25rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+    <div class="auth-split">
+
+        <!-- Left Promo Panel -->
+        <div class="auth-promo">
+            <div class="promo-logo">🤖</div>
+            <div class="promo-headline">Your AI<br><span>Interview Coach</span></div>
+            <p class="promo-desc">Practice with an intelligent interviewer that adapts to your skill level and gives you
+                real-time feedback.</p>
+            <ul class="promo-features">
+                <li>
+                    <div class="pf-dot" style="background:rgba(99,102,241,0.2);color:#a5b4fc;">🧠</div>
+                    <span>AI-generated questions from your resume</span>
+                </li>
+                <li>
+                    <div class="pf-dot" style="background:rgba(6,182,212,0.2);color:#67e8f9;">📊</div>
+                    <span>Real-time emotion & confidence tracking</span>
+                </li>
+                <li>
+                    <div class="pf-dot" style="background:rgba(16,185,129,0.2);color:#6ee7b7;">💻</div>
+                    <span>Live coding challenges with test cases</span>
+                </li>
+                <li>
+                    <div class="pf-dot" style="background:rgba(245,158,11,0.2);color:#fcd34d;">📄</div>
+                    <span>Detailed PDF performance report</span>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Right Form Panel -->
+        <div class="auth-form-panel">
+            <div class="auth-header">
+                <h1 class="auth-title">Welcome Back</h1>
+                <p class="auth-subtitle">Sign in to continue your interview prep journey</p>
+            </div>
+
+            <div class="auth-security-note">
+                <i class="bi bi-shield-check-fill"></i>
+                Secured with CSRF protection &amp; brute-force lockout
+            </div>
+
+            <!-- Lockout countdown banner (shown by JS if locked) -->
+            <div class="lockout-banner" id="lockoutBanner">
+                <i class="bi bi-lock-fill" style="font-size:1rem;"></i>
+                <span>Account temporarily locked. Try again in <strong id="lockoutTimer">--:--</strong></span>
+            </div>
+
+            <form method="POST" action="{{ url_for('auth.login') }}" autocomplete="on" id="loginForm">
+                <!-- CSRF Token -->
+                <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+                <div class="form-group-custom">
+                    <label class="form-label-custom" for="username">Username</label>
+                    <div class="input-wrapper">
+                        <i class="bi bi-person-fill input-icon"></i>
+                        <input type="text" class="form-input-custom" id="username" name="username"
+                            placeholder="Enter your username" autocomplete="username" required>
+                    </div>
+                </div>
+
+                <div class="form-group-custom">
+                    <label class="form-label-custom" for="password">Password</label>
+                    <div class="input-wrapper">
+                        <i class="bi bi-lock-fill input-icon"></i>
+                        <input type="password" class="form-input-custom" id="password" name="password"
+                            placeholder="Enter your password" autocomplete="current-password" required>
+                    </div>
+                    <p class="attempt-warning" id="attemptWarn"></p>
+                </div>
+
+                <button type="submit" class="btn-auth-submit" id="loginBtn">
+                    <i class="bi bi-shield-lock-fill"></i> Secure Sign In
+                </button>
+            </form>
+
+            <div class="auth-divider"><span>New to InterviewAI?</span></div>
+
+            <div class="auth-footer-text">
+                Don't have an account?
+                <a class="auth-link" href="{{ url_for('auth.register') }}">Create one free →</a>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function() {
+    'use strict';
+
+    // ── Lockout status check on page load ──────────────────────────
+    async function checkLockout() {
+        try {
+            const res = await fetch('{{ url_for("auth.lockout_status") }}');
+            const data = await res.json();
+            if (data.locked) {
+                showLockout(data.remaining_seconds);
+            }
+        } catch(e) { /* silently ignore */ }
+    }
+
+    let countdownInterval = null;
+
+    function showLockout(seconds) {
+        const banner = document.getElementById('lockoutBanner');
+        const timer  = document.getElementById('lockoutTimer');
+        const btn    = document.getElementById('loginBtn');
+        banner.classList.add('active');
+        btn.disabled = true;
+        btn.style.opacity = '0.5';
+
+        let remaining = seconds;
+        function tick() {
+            const m = String(Math.floor(remaining / 60)).padStart(2,'0');
+            const s = String(remaining % 60).padStart(2,'0');
+            timer.textContent = m + ':' + s;
+            if (remaining <= 0) {
+                clearInterval(countdownInterval);
+                banner.classList.remove('active');
+                btn.disabled = false;
+                btn.style.opacity = '1';
+                timer.textContent = '--:--';
+            }
+            remaining--;
+        }
+        tick();
+        countdownInterval = setInterval(tick, 1000);
+    }
+
+    // ── Flash message attempt extraction ──────────────────────────
+    // If server returned an attempt-remaining hint, show it inline
+    const flashMsgs = document.querySelectorAll('.alert');
+    flashMsgs.forEach(function(el) {
+        const txt = el.textContent || '';
+        const match = txt.match(/(\d+) attempt/);
+        if (match) {
+            const warn = document.getElementById('attemptWarn');
+            warn.textContent = '⚠ ' + match[0] + 's remaining before lockout.';
+            warn.style.display = 'block';
+        }
+    });
+
+    // ── Submit spinner ────────────────────────────────────────────
+    document.getElementById('loginForm').addEventListener('submit', function() {
+        const btn = document.getElementById('loginBtn');
+        btn.innerHTML = '<span style="width:16px;height:16px;border:2px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;display:inline-block;animation:spin 0.7s linear infinite;"></span> Verifying...';
+        btn.disabled = true;
+    });
+
+    checkLockout();
+})();
+</script>
+<style>
+    @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+{% endblock %}

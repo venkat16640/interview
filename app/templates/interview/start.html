@@ -1,0 +1,526 @@
+{% extends "base.html" %}
+
+{% block title %}Launch Interview — InterviewAI Pro{% endblock %}
+
+{% block extra_css %}
+<style>
+    .start-page {
+        min-height: calc(100vh - 120px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2.5rem 1rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Animated ambient orbs */
+    .start-orb {
+        position: absolute;
+        border-radius: 50%;
+        pointer-events: none;
+        filter: blur(60px);
+        animation: orbFloat 8s ease-in-out infinite;
+    }
+
+    .orb-1 {
+        width: 480px;
+        height: 480px;
+        top: -180px;
+        left: -180px;
+        background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%);
+    }
+
+    .orb-2 {
+        width: 380px;
+        height: 380px;
+        bottom: -120px;
+        right: -120px;
+        background: radial-gradient(circle, rgba(139, 92, 246, 0.12) 0%, transparent 70%);
+        animation-delay: -3s;
+        animation-duration: 10s;
+    }
+
+    .orb-3 {
+        width: 280px;
+        height: 280px;
+        top: 40%;
+        left: 50%;
+        background: radial-gradient(circle, rgba(6, 182, 212, 0.08) 0%, transparent 70%);
+        animation-delay: -6s;
+        animation-duration: 12s;
+    }
+
+    @keyframes orbFloat {
+
+        0%,
+        100% {
+            transform: translate(0, 0) scale(1);
+        }
+
+        33% {
+            transform: translate(30px, -30px) scale(1.05);
+        }
+
+        66% {
+            transform: translate(-20px, 20px) scale(0.97);
+        }
+    }
+
+    /* Step indicator */
+    .start-step-indicator {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0;
+        margin-bottom: 2rem;
+        position: relative;
+        z-index: 2;
+    }
+
+    .step-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.15);
+        transition: all 0.3s;
+    }
+
+    .step-dot.active {
+        background: #6366f1;
+        box-shadow: 0 0 10px rgba(99, 102, 241, 0.6);
+        width: 28px;
+        border-radius: 5px;
+    }
+
+    .step-line {
+        width: 32px;
+        height: 2px;
+        background: rgba(255, 255, 255, 0.08);
+    }
+
+    /* Main card */
+    .start-card {
+        background: rgba(17, 24, 39, 0.8);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 28px;
+        width: 100%;
+        max-width: 600px;
+        backdrop-filter: blur(20px);
+        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5), 0 0 80px rgba(99, 102, 241, 0.07);
+        position: relative;
+        overflow: hidden;
+        animation: startCardIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        z-index: 2;
+    }
+
+    .start-card::before {
+        content: '';
+        position: absolute;
+        top: -1px;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(90deg, #6366f1, #8b5cf6, #06b6d4);
+    }
+
+    @keyframes startCardIn {
+        from {
+            opacity: 0;
+            transform: translateY(40px) scale(0.95);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+
+    .start-card-header {
+        padding: 2.5rem 2.75rem 2rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.06) 0%, transparent 60%);
+        position: relative;
+    }
+
+    .start-icon-wrap {
+        width: 72px;
+        height: 72px;
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.25), rgba(139, 92, 246, 0.15));
+        border: 1px solid rgba(99, 102, 241, 0.35);
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 8px 32px rgba(99, 102, 241, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+
+    .start-title {
+        font-family: 'Outfit', sans-serif;
+        font-weight: 800;
+        font-size: 1.7rem;
+        color: #f1f5f9;
+        margin-bottom: 0.4rem;
+        line-height: 1.2;
+    }
+
+    .start-subtitle {
+        font-size: 0.88rem;
+        color: #64748b;
+        line-height: 1.7;
+    }
+
+    /* Rounds preview */
+    .rounds-strip {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.75rem;
+        margin-bottom: 1.75rem;
+    }
+
+    .round-pill {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        border-radius: 14px;
+        padding: 1rem 0.75rem;
+        text-align: center;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .round-pill::before {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+    }
+
+    .round-pill.r1::before {
+        background: linear-gradient(90deg, #6366f1, #8b5cf6);
+    }
+
+    .round-pill.r2::before {
+        background: linear-gradient(90deg, #10b981, #34d399);
+    }
+
+    .round-pill.r3::before {
+        background: linear-gradient(90deg, #f59e0b, #fbbf24);
+    }
+
+    .round-pill:hover {
+        transform: translateY(-3px);
+        border-color: rgba(255, 255, 255, 0.14);
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+    .round-pill .rp-icon {
+        font-size: 1.4rem;
+        margin-bottom: 0.4rem;
+    }
+
+    .round-pill .rp-num {
+        font-family: 'Outfit', sans-serif;
+        font-weight: 800;
+        font-size: 0.75rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        margin-bottom: 0.2rem;
+    }
+
+    .round-pill .rp-name {
+        font-size: 0.8rem;
+        color: #64748b;
+        font-weight: 500;
+    }
+
+    .round-pill.r1 .rp-num {
+        color: #a78bfa;
+    }
+
+    .round-pill.r2 .rp-num {
+        color: #6ee7b7;
+    }
+
+    .round-pill.r3 .rp-num {
+        color: #fcd34d;
+    }
+
+    /* Upload drop zone */
+    .upload-drop-zone {
+        border: 2px dashed rgba(99, 102, 241, 0.3);
+        border-radius: 16px;
+        padding: 2.25rem;
+        text-align: center;
+        background: rgba(99, 102, 241, 0.04);
+        transition: all 0.3s;
+        cursor: pointer;
+        margin-bottom: 1.5rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .upload-drop-zone:hover,
+    .upload-drop-zone.drag-over {
+        border-color: rgba(99, 102, 241, 0.65);
+        background: rgba(99, 102, 241, 0.09);
+        box-shadow: 0 0 30px rgba(99, 102, 241, 0.1);
+    }
+
+    .upload-drop-zone input[type="file"] {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        cursor: pointer;
+        width: 100%;
+        height: 100%;
+    }
+
+    .upload-icon {
+        font-size: 2.5rem;
+        margin-bottom: 0.75rem;
+        display: block;
+    }
+
+    .upload-label {
+        font-weight: 700;
+        font-size: 0.95rem;
+        color: #e2e8f0;
+        margin-bottom: 0.3rem;
+    }
+
+    .upload-hint {
+        font-size: 0.78rem;
+        color: #475569;
+    }
+
+    .upload-file-name {
+        font-size: 0.82rem;
+        color: #10b981;
+        margin-top: 0.75rem;
+        font-weight: 600;
+        display: none;
+    }
+
+    /* Preflight checklist */
+    .preflight-list {
+        list-style: none;
+        padding: 0;
+        margin-bottom: 1.5rem;
+    }
+
+    .preflight-list li {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+        padding: 0.75rem 1rem;
+        border-radius: 12px;
+        font-size: 0.86rem;
+        color: #94a3b8;
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(255, 255, 255, 0.04);
+        margin-bottom: 0.5rem;
+        transition: background 0.2s;
+    }
+
+    .preflight-list li:hover {
+        background: rgba(255, 255, 255, 0.04);
+    }
+
+    .check-icon {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+        flex-shrink: 0;
+        margin-top: 1px;
+    }
+
+    /* Submit button */
+    .btn-start-submit {
+        width: 100%;
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        color: white;
+        border: none;
+        border-radius: 13px;
+        padding: 1.05rem;
+        font-size: 1rem;
+        font-weight: 700;
+        font-family: 'Inter', sans-serif;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 8px 28px rgba(99, 102, 241, 0.45);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.6rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-start-submit::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+        transition: left 0.5s;
+    }
+
+    .btn-start-submit:hover::before {
+        left: 100%;
+    }
+
+    .btn-start-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 36px rgba(99, 102, 241, 0.6);
+    }
+
+    .btn-start-submit:active {
+        transform: translateY(0);
+    }
+
+    .btn-back-link {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.4rem;
+        margin-top: 1.25rem;
+        color: #475569;
+        text-decoration: none;
+        font-size: 0.85rem;
+        font-weight: 500;
+        transition: color 0.2s;
+    }
+
+    .btn-back-link:hover {
+        color: #94a3b8;
+    }
+
+    .start-card-body {
+        padding: 2.25rem 2.75rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Ambient orbs -->
+<div class="start-orb orb-1"></div>
+<div class="start-orb orb-2"></div>
+<div class="start-orb orb-3"></div>
+
+<div class="start-page">
+    <div class="start-card">
+        <div class="start-card-header">
+            <div class="start-icon-wrap">📂</div>
+            <h1 class="start-title">Launch Your Interview</h1>
+            <p class="start-subtitle">Upload your resume and our AI will generate personalized questions across 3
+                rounds, tailored to your exact skills and experience.</p>
+        </div>
+
+        <div class="start-card-body">
+            <!-- Round preview -->
+            <div class="rounds-strip">
+                <div class="round-pill r1">
+                    <div class="rp-icon">🧠</div>
+                    <div class="rp-num">Round 01</div>
+                    <div class="rp-name">Technical</div>
+                </div>
+                <div class="round-pill r2">
+                    <div class="rp-icon">💻</div>
+                    <div class="rp-num">Round 02</div>
+                    <div class="rp-name">Coding</div>
+                </div>
+                <div class="round-pill r3">
+                    <div class="rp-icon">🤝</div>
+                    <div class="rp-num">Round 03</div>
+                    <div class="rp-name">HR</div>
+                </div>
+            </div>
+
+            <form method="POST" action="{{ url_for('interview.start') }}" enctype="multipart/form-data" id="startForm">
+
+                <!-- File drop zone -->
+                <div class="upload-drop-zone" id="dropZone">
+                    <input type="file" name="resume" accept=".pdf,.docx" required id="resumeFile">
+                    <span class="upload-icon">📄</span>
+                    <div class="upload-label">Drag &amp; drop your resume here</div>
+                    <div class="upload-hint">or click to browse &mdash; PDF or DOCX, max 16 MB</div>
+                    <div class="upload-file-name" id="fileName"></div>
+                </div>
+
+                <!-- Preflight checklist -->
+                <ul class="preflight-list">
+                    <li>
+                        <span class="check-icon"
+                            style="background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.3);color:#f59e0b;">💡</span>
+                        <div><strong style="color:#e2e8f0">Set up your environment</strong><br>Find a quiet, well-lit
+                            space before you begin.</div>
+                    </li>
+                    <li>
+                        <span class="check-icon"
+                            style="background:rgba(6,182,212,0.12);border:1px solid rgba(6,182,212,0.3);color:#06b6d4;">🎙</span>
+                        <div><strong style="color:#e2e8f0">Camera &amp; microphone required</strong><br>Grant browser
+                            permissions when prompted.</div>
+                    </li>
+                    <li>
+                        <span class="check-icon"
+                            style="background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.3);color:#ef4444;">🚫</span>
+                        <div><strong style="color:#e2e8f0">You must be alone</strong><br>Multi-person detection is
+                            active — extra faces = violations.</div>
+                    </li>
+                </ul>
+
+                <button type="submit" class="btn-start-submit" id="startBtn">
+                    <i class="bi bi-play-circle-fill"></i> Begin AI Interview
+                </button>
+            </form>
+
+            <a href="{{ url_for('main.dashboard') }}" class="btn-back-link">
+                <i class="bi bi-arrow-left"></i> Back to Dashboard
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const fileInput = document.getElementById('resumeFile');
+    const fileNameEl = document.getElementById('fileName');
+    const dropZone = document.getElementById('dropZone');
+
+    fileInput.addEventListener('change', function () {
+        if (this.files[0]) {
+            fileNameEl.textContent = '✅ ' + this.files[0].name;
+            fileNameEl.style.display = 'block';
+        }
+    });
+
+    dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+    dropZone.addEventListener('drop', () => dropZone.classList.remove('drag-over'));
+
+    document.getElementById('startForm').addEventListener('submit', function () {
+        const btn = document.getElementById('startBtn');
+        btn.innerHTML = '<span style="width:18px;height:18px;border:2.5px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;display:inline-block;animation:spin 0.7s linear infinite;"></span> Initializing AI…';
+        btn.disabled = true;
+    });
+</script>
+<style>
+    @keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+</style>
+{% endblock %}

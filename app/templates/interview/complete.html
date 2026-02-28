@@ -1,0 +1,764 @@
+{% extends "base.html" %}
+
+{% block title %}Interview Complete – Analytics Report{% endblock %}
+
+{% block extra_css %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+  rel="stylesheet">
+<style>
+  body {
+    background: #0d1117;
+    color: #e5e7eb;
+    font-family: 'Inter', sans-serif;
+  }
+
+  nav.navbar,
+  footer {
+    display: none !important;
+  }
+
+  main {
+    padding: 0 !important;
+  }
+
+  .report-wrapper {
+    min-height: 100vh;
+    background: #0d1117;
+    padding: 32px 16px;
+  }
+
+  .report-header {
+    background: linear-gradient(135deg, #1a1f35 0%, #12161e 100%);
+    border: 1px solid #1e2433;
+    border-radius: 16px;
+    padding: 32px 40px;
+    margin-bottom: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .report-title {
+    font-size: 26px;
+    font-weight: 800;
+    color: #fff;
+  }
+
+  .report-subtitle {
+    font-size: 13px;
+    color: #6b7280;
+    margin-top: 4px;
+  }
+
+  .badge-passed {
+    background: rgba(16, 185, 129, .15);
+    color: #10b981;
+    border: 1px solid rgba(16, 185, 129, .3);
+    padding: 8px 20px;
+    border-radius: 30px;
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  .badge-failed {
+    background: rgba(239, 68, 68, .15);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, .3);
+    padding: 8px 20px;
+    border-radius: 30px;
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .score-card {
+    background: #13161e;
+    border: 1px solid #1e2433;
+    border-radius: 12px;
+    padding: 24px;
+    text-align: center;
+  }
+
+  .score-num {
+    font-size: 42px;
+    font-weight: 900;
+    line-height: 1;
+  }
+
+  .score-label {
+    font-size: 12px;
+    color: #6b7280;
+    margin-top: 6px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .score-bar-bg {
+    background: #1e2433;
+    border-radius: 4px;
+    height: 6px;
+    margin-top: 12px;
+  }
+
+  .score-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width .8s ease;
+  }
+
+  .panel {
+    background: #13161e;
+    border: 1px solid #1e2433;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 24px;
+  }
+
+  .panel-title {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #9ca3af;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .emo-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+
+  .emo-emoji {
+    font-size: 20px;
+    width: 28px;
+    flex-shrink: 0;
+  }
+
+  .emo-label {
+    font-size: 13px;
+    color: #d1d5db;
+    width: 80px;
+    flex-shrink: 0;
+  }
+
+  .emo-track {
+    flex: 1;
+    background: #1e2433;
+    border-radius: 4px;
+    height: 10px;
+    overflow: hidden;
+  }
+
+  .emo-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 1s ease;
+  }
+
+  .emo-pct {
+    font-size: 13px;
+    font-weight: 700;
+    width: 40px;
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  .behav-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  @media (max-width: 1024px) {
+
+    .card-grid,
+    .behav-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .report-header {
+      flex-direction: column;
+      text-align: center;
+      padding: 24px;
+    }
+
+    .card-grid,
+    .behav-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .behav-card {
+    background: #0d1117;
+    border: 1px solid #1e2433;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+  }
+
+  .behav-ring {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 12px;
+  }
+
+  .behav-ring svg {
+    transform: rotate(-90deg);
+  }
+
+  .behav-ring-val {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 800;
+  }
+
+  .behav-label {
+    font-size: 12px;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+  }
+
+  .chart-box {
+    background: #0d1117;
+    border-radius: 8px;
+    padding: 16px;
+    height: 200px;
+  }
+
+  .action-btns {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .btn-main {
+    padding: 14px 32px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all .2s;
+    text-decoration: none;
+  }
+
+  .btn-primary-c {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(102, 126, 234, .35);
+  }
+
+  .btn-primary-c:hover {
+    transform: translateY(-2px);
+    color: #fff;
+  }
+
+  .btn-outline-c {
+    background: transparent;
+    color: #9ca3af;
+    border: 1px solid #374151;
+  }
+
+  .btn-outline-c:hover {
+    background: #1e2433;
+    color: #fff;
+  }
+
+  .xp-banner {
+    background: linear-gradient(135deg, rgba(245, 158, 11, .12), rgba(234, 179, 8, .06));
+    border: 1px solid rgba(245, 158, 11, .25);
+    border-radius: 12px;
+    padding: 20px 28px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .xp-icon {
+    font-size: 36px;
+  }
+
+  .xp-text {
+    font-size: 20px;
+    font-weight: 800;
+    color: #fbbf24;
+  }
+
+  .xp-sub {
+    font-size: 13px;
+    color: #6b7280;
+  }
+
+  .violation-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(239, 68, 68, .1);
+    border: 1px solid rgba(239, 68, 68, .25);
+    color: #ef4444;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  @media(max-width:768px) {
+
+    .card-grid,
+    .behav-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .report-header {
+      flex-direction: column;
+      gap: 16px;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="report-wrapper">
+  <div style="max-width:900px; margin:0 auto;">
+
+    <!-- Header -->
+    <div class="report-header">
+      <div>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+          <div
+            style="width:42px;height:42px;background:linear-gradient(135deg,#667eea,#764ba2);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;">
+            🤖</div>
+          <div>
+            <div class="report-title">AI Interview Report</div>
+            <div class="report-subtitle">Candidate Analytics &amp; Behavioral Assessment</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+          <span style="background:#1e2433;padding:4px 12px;border-radius:20px;font-size:12px;color:#9ca3af;"><i
+              class="bi bi-calendar3"></i> {{ interview.completed_at.strftime('%d %b %Y, %H:%M') if
+            interview.completed_at else 'Just completed' }}</span>
+          <span id="violationChip" class="violation-chip" style="display:none;"><i
+              class="bi bi-exclamation-triangle-fill"></i> <span id="violationCount">0</span> violations</span>
+        </div>
+      </div>
+      <div>
+        {% if interview.overall_score >= 7 %}
+        <div class="badge-passed">✅ Strong Candidate</div>
+        {% elif interview.overall_score >= 5 %}
+        <div class="badge-passed"
+          style="background:rgba(245,158,11,.15);color:#f59e0b;border-color:rgba(245,158,11,.3);">⚡ Promising</div>
+        {% else %}
+        <div class="badge-failed">⚠️ Needs Improvement</div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- XP Banner -->
+    <div class="xp-banner">
+      <div class="xp-icon">⭐</div>
+      <div>
+        <div class="xp-text">+{{ (interview.overall_score * 10)|int }} XP Earned!</div>
+        <div class="xp-sub">You completed all 3 rounds of the virtual interview</div>
+      </div>
+      <div style="margin-left:auto;text-align:right;">
+        <div style="font-size:12px;color:#6b7280;">Total XP</div>
+        <div style="font-size:20px;font-weight:900;color:#fbbf24;">{{ current_user.xp if current_user else 0 }}</div>
+        <div style="font-size:11px;color:#4b5563;">Level {{ current_user.level if current_user else 1 }}</div>
+      </div>
+    </div>
+
+    <!-- Badges Earned -->
+    {% set badges = current_user.get_badges() if current_user else [] %}
+    {% if badges %}
+    <div class="panel" style="margin-bottom:24px;">
+      <div class="panel-title"><i class="bi bi-trophy-fill" style="color:#f59e0b;"></i> Achievements Earned</div>
+      <div style="display:flex;flex-wrap:wrap;gap:12px;">
+        {% set badge_meta = {
+        'Tech Wizard': {'icon': '🧙', 'desc': 'Scored 8+/10 in Technical Round', 'color': '#60a5fa'},
+        'Code Master': {'icon': '💻', 'desc': 'Near-perfect score in Coding Round', 'color': '#a78bfa'},
+        'People Person': {'icon': '🤝', 'desc': 'Excellent interpersonal skills in HR', 'color': '#c084fc'},
+        'Interview Pro': {'icon': '🏆', 'desc': 'Completed the full interview loop', 'color': '#fbbf24'},
+        'Problem Solver': {'icon': '🧩', 'desc': 'Completed the Technical Round', 'color': '#34d399'},
+        'Algorithm Ace': {'icon': '⚡', 'desc': 'Completed the Coding Round', 'color': '#818cf8'},
+        'Communicator': {'icon': '🗣️', 'desc': 'Completed the HR Round', 'color': '#fb923c'},
+        } %}
+        {% for badge in badges %}
+        {% set meta = badge_meta.get(badge, {'icon': '🏅', 'desc': badge, 'color': '#6b7280'}) %}
+        <div
+          style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:10px 16px;">
+          <span style="font-size:24px;">{{ meta.icon }}</span>
+          <div>
+            <div style="font-size:13px;font-weight:700;color:#f1f5f9;">{{ badge }}</div>
+            <div style="font-size:11px;color:#6b7280;">{{ meta.desc }}</div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Score Cards -->
+    <div class="card-grid">
+      <div class="score-card">
+        <div class="score-num" style="color:#60a5fa;">{{ interview.tech_score|round(1) }}<span
+            style="font-size:20px;">/10</span></div>
+        <div class="score-label">Technical Round</div>
+        <div class="score-bar-bg">
+          <div class="score-bar-fill"
+            style="width:{{ (interview.tech_score/10*100)|int }}%;background:linear-gradient(90deg,#3b82f6,#1d4ed8);">
+          </div>
+        </div>
+      </div>
+      <div class="score-card">
+        <div class="score-num" style="color:#a78bfa;">{{ interview.coding_score|round(1) }}<span
+            style="font-size:20px;">/10</span></div>
+        <div class="score-label">Coding Round</div>
+        <div class="score-bar-bg">
+          <div class="score-bar-fill"
+            style="width:{{ (interview.coding_score/10*100)|int }}%;background:linear-gradient(90deg,#7c3aed,#5b21b6);">
+          </div>
+        </div>
+      </div>
+      <div class="score-card">
+        <div class="score-num" style="color:#34d399;">{{ interview.overall_score|round(1) }}<span
+            style="font-size:20px;">/10</span></div>
+        <div class="score-label">Overall Score</div>
+        <div class="score-bar-bg">
+          <div class="score-bar-fill"
+            style="width:{{ (interview.overall_score/10*100)|int }}%;background:linear-gradient(90deg,#10b981,#059669);">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Behavioral Metrics (loaded via JS) -->
+    <div class="panel">
+      <div class="panel-title"><i class="bi bi-activity" style="color:#f59e0b;"></i> Behavioral Analysis – Emotion
+        Tracking</div>
+      <div class="behav-grid" id="behavGrid">
+        <div class="behav-card">
+          <div class="behav-ring">
+            <svg width="80" height="80" viewBox="0 0 80 80">
+              <circle cx="40" cy="40" r="34" fill="none" stroke="#1e2433" stroke-width="8" />
+              <circle id="engRing" cx="40" cy="40" r="34" fill="none" stroke="#10b981" stroke-width="8"
+                stroke-linecap="round" stroke-dasharray="213.6" stroke-dashoffset="213.6" />
+            </svg>
+            <div class="behav-ring-val" id="engVal" style="color:#10b981;">–</div>
+          </div>
+          <div class="behav-label">Engagement</div>
+        </div>
+        <div class="behav-card">
+          <div class="behav-ring">
+            <svg width="80" height="80" viewBox="0 0 80 80">
+              <circle cx="40" cy="40" r="34" fill="none" stroke="#1e2433" stroke-width="8" />
+              <circle id="confRing" cx="40" cy="40" r="34" fill="none" stroke="#667eea" stroke-width="8"
+                stroke-linecap="round" stroke-dasharray="213.6" stroke-dashoffset="213.6" />
+            </svg>
+            <div class="behav-ring-val" id="confVal" style="color:#667eea;">–</div>
+          </div>
+          <div class="behav-label">Confidence</div>
+        </div>
+        <div class="behav-card">
+          <div class="behav-ring">
+            <svg width="80" height="80" viewBox="0 0 80 80">
+              <circle cx="40" cy="40" r="34" fill="none" stroke="#1e2433" stroke-width="8" />
+              <circle id="stressRing" cx="40" cy="40" r="34" fill="none" stroke="#f59e0b" stroke-width="8"
+                stroke-linecap="round" stroke-dasharray="213.6" stroke-dashoffset="213.6" />
+            </svg>
+            <div class="behav-ring-val" id="stressVal" style="color:#f59e0b;">–</div>
+          </div>
+          <div class="behav-label">Stress Level</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Emotion Distribution -->
+    <div class="panel">
+      <div class="panel-title"><i class="bi bi-emoji-smile" style="color:#a78bfa;"></i> Emotion Distribution</div>
+      <div id="emoDistPanel">
+        <div style="color:#4b5563;font-size:13px;">Loading emotion data...</div>
+      </div>
+    </div>
+
+    <!-- Emotion Heatmap -->
+    <div class="panel">
+      <div class="panel-title"><i class="bi bi-grid-3x3-gap-fill" style="color:#f59e0b;"></i> Emotion Intensity Heatmap
+        <span
+          style="font-size:10px;color:#4b5563;font-weight:400;margin-left:8px;text-transform:none;letter-spacing:0;">Each
+          cell = ~5 seconds of interview time</span>
+      </div>
+
+      <!-- Heatmap legend -->
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:14px;flex-wrap:wrap;">
+        <span style="font-size:11px;color:#6b7280;">Calm</span>
+        <div style="display:flex;gap:2px;">
+          <div style="width:16px;height:16px;border-radius:3px;background:#10b981;"></div>
+          <div style="width:16px;height:16px;border-radius:3px;background:#34d399;"></div>
+          <div style="width:16px;height:16px;border-radius:3px;background:#6b7280;"></div>
+          <div style="width:16px;height:16px;border-radius:3px;background:#f59e0b;"></div>
+          <div style="width:16px;height:16px;border-radius:3px;background:#ef4444;"></div>
+        </div>
+        <span style="font-size:11px;color:#6b7280;">Stressed</span>
+        <div style="margin-left:16px;display:flex;gap:10px;flex-wrap:wrap;">
+          <span style="font-size:10px;color:#6b7280;">😊 happy <span
+              style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#10b981;vertical-align:middle;"></span></span>
+          <span style="font-size:10px;color:#6b7280;">😐 neutral <span
+              style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#6b7280;vertical-align:middle;"></span></span>
+          <span style="font-size:10px;color:#6b7280;">😨 fear <span
+              style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#f59e0b;vertical-align:middle;"></span></span>
+          <span style="font-size:10px;color:#6b7280;">😠 angry <span
+              style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#ef4444;vertical-align:middle;"></span></span>
+          <span style="font-size:10px;color:#6b7280;">😮 surprise <span
+              style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#a78bfa;vertical-align:middle;"></span></span>
+          <span style="font-size:10px;color:#6b7280;">😔 sad <span
+              style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#3b82f6;vertical-align:middle;"></span></span>
+        </div>
+      </div>
+
+      <div id="emotionHeatmap" style="
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(18px, 1fr));
+        gap: 3px;
+        padding: 4px 0;
+        min-height: 60px;
+      ">
+        <div style="color:#4b5563;font-size:13px;">Loading heatmap...</div>
+      </div>
+
+      <div style="display:flex;justify-content:space-between;margin-top:8px;font-size:10px;color:#4b5563;">
+        <span>Interview Start</span>
+        <span>Interview End</span>
+      </div>
+    </div>
+
+    <!-- Emotion Timeline Chart -->
+    <div class="panel">
+      <div class="panel-title"><i class="bi bi-graph-up" style="color:#60a5fa;"></i> Emotion Confidence Timeline</div>
+      <div class="chart-box">
+        <canvas id="emotionTimelineChart"></canvas>
+      </div>
+      <div id="emoTimelineLegend"
+        style="display:flex;gap:16px;flex-wrap:wrap;margin-top:12px;font-size:11px;color:#6b7280;"></div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-btns">
+      <a href="{{ url_for('interview.download_report', interview_id=interview.id) }}" class="btn-main btn-primary-c">
+        <i class="bi bi-file-earmark-pdf-fill"></i> Download Full Report
+      </a>
+      <a href="{{ url_for('interview.start') }}" class="btn-main btn-outline-c">
+        <i class="bi bi-arrow-repeat"></i> Start New Interview
+      </a>
+      <a href="{{ url_for('main.dashboard') }}" class="btn-main btn-outline-c">
+        <i class="bi bi-speedometer2"></i> Dashboard
+      </a>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+  const INTERVIEW_ID = {{ interview.id }};
+
+  const EMOTION_COLORS = {
+    happy: { fill: '#10b981', emoji: '😊' },
+    neutral: { fill: '#94a3b8', emoji: '😐' },
+    fear: { fill: '#f59e0b', emoji: '😨' },
+    sad: { fill: '#3b82f6', emoji: '😔' },
+    angry: { fill: '#ef4444', emoji: '😠' },
+    disgust: { fill: '#7c3aed', emoji: '🤢' },
+    surprise: { fill: '#a78bfa', emoji: '😮' }
+  };
+
+  function setRing(ringId, pct) {
+    const el = document.getElementById(ringId);
+    if (!el) return;
+    const circumference = 213.6;
+    el.style.strokeDashoffset = circumference - (pct / 100) * circumference;
+  }
+
+  // ── Emotion Heatmap ──────────────────────────────────────────
+  function renderEmotionHeatmap(timeline) {
+    const heatmapEl = document.getElementById('emotionHeatmap');
+    if (!heatmapEl) return;
+
+    if (!timeline || timeline.length === 0) {
+      heatmapEl.innerHTML = '<div style="color:#4b5563;font-size:13px;padding:20px 0;">No heatmap data available for this session.</div>';
+      return;
+    }
+
+    // Emotion → base colour
+    const EMO_META = {
+      happy: '#10b981',
+      neutral: '#6b7280',
+      surprise: '#a78bfa',
+      sad: '#3b82f6',
+      disgust: '#7c3aed',
+      fear: '#f59e0b',
+      angry: '#ef4444',
+    };
+
+    const cells = timeline.map((point, idx) => {
+      const base = EMO_META[point.emotion] || '#1e2433';
+      const alpha = (0.25 + (point.confidence / 100) * 0.75).toFixed(2);
+      const elapsed = idx * 5; // approx seconds
+      const m = Math.floor(elapsed / 60);
+      const s = String(elapsed % 60).padStart(2, '0');
+      const title = `${point.emotion} ${point.confidence}% @ ${m}:${s}`;
+
+      const div = document.createElement('div');
+      div.title = title;
+      div.style.cssText = `
+        width:100%;padding-bottom:100%;border-radius:3px;
+        background:${base};opacity:${alpha};
+        cursor:default;transition:opacity 0.15s,transform 0.15s;
+        position:relative;
+      `;
+      div.addEventListener('mouseover', () => {
+        div.style.opacity = '1';
+        div.style.transform = 'scale(1.5)';
+        div.style.zIndex = '10';
+      });
+      div.addEventListener('mouseout', () => {
+        div.style.opacity = alpha;
+        div.style.transform = '';
+        div.style.zIndex = '';
+      });
+      return div;
+    });
+
+    heatmapEl.innerHTML = '';
+    cells.forEach(c => heatmapEl.appendChild(c));
+  }
+
+  async function loadEmotionData() {
+
+    try {
+      const res = await fetch(`/api/emotion-summary/${INTERVIEW_ID}`);
+      const data = await res.json();
+
+      if (!data.success) return;
+
+      // Violations chip
+      if (data.violations > 0) {
+        document.getElementById('violationChip').style.display = 'inline-flex';
+        document.getElementById('violationCount').textContent = data.violations;
+      }
+
+      // Behavioral rings
+      const b = data.behavioral || {};
+      const eng = b.engagement || 0, conf = b.confidence || 0, stress = b.stress || 0;
+      setRing('engRing', eng);
+      setRing('confRing', conf);
+      setRing('stressRing', stress);
+      document.getElementById('engVal').textContent = eng + '%';
+      document.getElementById('confVal').textContent = conf + '%';
+      document.getElementById('stressVal').textContent = stress + '%';
+
+      // Emotion distribution bars
+      const dist = data.emotion_distribution || {};
+      const panel = document.getElementById('emoDistPanel');
+      if (Object.keys(dist).length === 0) {
+        panel.innerHTML = '<div style="color:#4b5563;font-size:13px;">No emotion data recorded for this session.</div>';
+      } else {
+        const sorted = Object.entries(dist).sort((a, b) => b[1] - a[1]);
+        panel.innerHTML = sorted.map(([emo, pct]) => {
+          const cfg = EMOTION_COLORS[emo] || { fill: '#6b7280', emoji: '🙂' };
+          return `<div class="emo-row">
+          <div class="emo-emoji">${cfg.emoji}</div>
+          <div class="emo-label">${emo.charAt(0).toUpperCase() + emo.slice(1)}</div>
+          <div class="emo-track"><div class="emo-fill" style="width:${pct}%;background:${cfg.fill};"></div></div>
+          <div class="emo-pct" style="color:${cfg.fill};">${pct}%</div>
+        </div>`;
+        }).join('');
+      }
+
+      // Timeline chart
+      const timeline = data.timeline || [];
+      if (timeline.length > 0) {
+
+        // ── Render Heatmap first (cheap, no canvas) ──
+        renderEmotionHeatmap(timeline);
+
+        // Group by unique emotions for multi-line chart
+        const emoList = [...new Set(timeline.map(t => t.emotion))];
+        // Sample every Nth point for readability
+        const maxPoints = 30;
+        const step = Math.max(1, Math.floor(timeline.length / maxPoints));
+        const sampled = timeline.filter((_, i) => i % step === 0);
+        const labels = sampled.map((_, i) => `${(i * step * 5)}s`);
+
+        const datasets = emoList.map(emo => {
+          const cfg = EMOTION_COLORS[emo] || { fill: '#6b7280' };
+          return {
+            label: emo.charAt(0).toUpperCase() + emo.slice(1),
+            data: sampled.map(t => t.emotion === emo ? t.confidence : null),
+            borderColor: cfg.fill,
+            backgroundColor: cfg.fill + '20',
+            tension: 0.4,
+            fill: false,
+            spanGaps: false,
+            pointRadius: 2,
+            borderWidth: 2
+          };
+        });
+
+        new Chart(document.getElementById('emotionTimelineChart'), {
+          type: 'line',
+          data: { labels, datasets },
+          options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+              y: { min: 0, max: 100, grid: { color: '#1e2433' }, ticks: { color: '#6b7280', font: { size: 10 } } },
+              x: { grid: { color: '#1e2433' }, ticks: { color: '#6b7280', font: { size: 10 }, maxTicksLimit: 8 } }
+            }
+          }
+        });
+
+        // Legend
+        document.getElementById('emoTimelineLegend').innerHTML = emoList.map(emo => {
+          const cfg = EMOTION_COLORS[emo] || { fill: '#6b7280', emoji: '🙂' };
+          return `<span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:50%;background:${cfg.fill};display:inline-block;"></span>${cfg.emoji} ${emo}</span>`;
+        }).join('');
+      } else {
+        renderEmotionHeatmap([]);
+        document.getElementById('emotionTimelineChart').parentElement.innerHTML = '<div style="color:#4b5563;font-size:13px;text-align:center;padding:40px;">No timeline data available for this session.</div>';
+      }
+
+    } catch (e) {
+      // Failed to load emotion data
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', loadEmotionData);
+</script>
+{% endblock %}

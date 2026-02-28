@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}InterviewAI Pro{% endblock %}</title>
+    <meta name="description" content="AI-powered mock interview platform with real-time emotion detection, adaptive questioning, and comprehensive analytics.">
+
+    <!-- Google Fonts: Inter + Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+        /* ============================================================
+           GLOBAL DESIGN SYSTEM - Premium Dark Theme
+        ============================================================ */
+        :root {
+            --brand-primary:   #6366f1;
+            --brand-secondary: #8b5cf6;
+            --brand-accent:    #06b6d4;
+            --brand-success:   #10b981;
+            --brand-danger:    #ef4444;
+            --brand-warning:   #f59e0b;
+
+            --bg-base:         #0a0f1e;
+            --bg-surface:      #111827;
+            --bg-card:         #1a2235;
+            --bg-glass:        rgba(26, 34, 53, 0.7);
+
+            --text-primary:    #f1f5f9;
+            --text-secondary:  #94a3b8;
+            --text-muted:      #64748b;
+
+            --border-subtle:   rgba(99,102,241,0.15);
+            --border-glass:    rgba(255,255,255,0.08);
+
+            --shadow-soft:     0 4px 24px rgba(0,0,0,0.4);
+            --shadow-glow:     0 0 40px rgba(99,102,241,0.15);
+            --radius-card:     16px;
+            --radius-btn:      10px;
+
+            --gradient-brand:  linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            --gradient-accent: linear-gradient(135deg, #06b6d4 0%, #6366f1 100%);
+            --gradient-bg:     linear-gradient(160deg, #0a0f1e 0%, #0d1526 50%, #0a0f1e 100%);
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--gradient-bg);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* Animated background particles */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(ellipse at 20% 50%, rgba(99,102,241,0.06) 0%, transparent 50%),
+                        radial-gradient(ellipse at 80% 20%, rgba(139,92,246,0.06) 0%, transparent 50%),
+                        radial-gradient(ellipse at 50% 80%, rgba(6,182,212,0.04) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        main { flex: 1; position: relative; z-index: 1; }
+
+        /* ── NAVBAR ─────────────────────────────────────────────── */
+        .main-navbar {
+            background: rgba(10, 15, 30, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-glass);
+            padding: 0.75rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            transition: background 0.3s ease;
+        }
+
+        .main-navbar .container { display: flex; align-items: center; justify-content: space-between; }
+
+        .navbar-brand-custom {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            text-decoration: none;
+        }
+
+        .brand-icon {
+            width: 38px;
+            height: 38px;
+            background: var(--gradient-brand);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.15rem;
+            box-shadow: 0 4px 15px rgba(99,102,241,0.4);
+        }
+
+        .brand-text {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            font-size: 1.25rem;
+            background: var(--gradient-brand);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .brand-text span {
+            background: var(--gradient-accent);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .main-nav-links {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            list-style: none;
+        }
+
+        .nav-link-custom {
+            color: var(--text-secondary) !important;
+            text-decoration: none;
+            padding: 0.45rem 0.9rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .nav-link-custom:hover {
+            color: var(--text-primary) !important;
+            background: rgba(99,102,241,0.12);
+        }
+
+        .nav-user-badge {
+            background: rgba(99,102,241,0.15);
+            border: 1px solid rgba(99,102,241,0.3);
+            border-radius: 20px;
+            color: var(--brand-primary) !important;
+            padding: 0.35rem 0.85rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .btn-nav-primary {
+            background: var(--gradient-brand);
+            color: white !important;
+            border: none;
+            border-radius: 8px;
+            padding: 0.45rem 1.1rem;
+            font-size: 0.87rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(99,102,241,0.35);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .btn-nav-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 18px rgba(99,102,241,0.5);
+            color: white !important;
+        }
+
+        .navbar-toggler-custom {
+            background: none;
+            border: 1px solid var(--border-glass);
+            border-radius: 8px;
+            padding: 0.45rem 0.65rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+            display: none;
+            font-size: 1.2rem;
+        }
+
+        /* ── FLASH MESSAGES ─────────────────────────────────────── */
+        .flash-container {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            max-width: 380px;
+        }
+
+        .flash-toast {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glass);
+            border-left: 3px solid var(--brand-primary);
+            border-radius: 12px;
+            padding: 0.85rem 1.1rem;
+            color: var(--text-primary);
+            font-size: 0.88rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            box-shadow: var(--shadow-soft);
+            animation: slideInToast 0.35s ease-out;
+            backdrop-filter: blur(12px);
+        }
+
+        .flash-toast.success { border-left-color: var(--brand-success); }
+        .flash-toast.danger  { border-left-color: var(--brand-danger); }
+        .flash-toast.warning { border-left-color: var(--brand-warning); }
+        .flash-toast.info    { border-left-color: var(--brand-accent); }
+
+        .flash-toast .toast-icon { font-size: 1.1rem; flex-shrink: 0; }
+        .flash-toast.success .toast-icon { color: var(--brand-success); }
+        .flash-toast.danger  .toast-icon { color: var(--brand-danger); }
+        .flash-toast.warning .toast-icon { color: var(--brand-warning); }
+        .flash-toast.info    .toast-icon { color: var(--brand-accent); }
+
+        .flash-close {
+            margin-left: auto;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 0;
+            font-size: 1rem;
+            line-height: 1;
+            transition: color 0.2s;
+        }
+        .flash-close:hover { color: var(--text-primary); }
+
+        @keyframes slideInToast {
+            from { transform: translateX(100%); opacity: 0; }
+            to   { transform: translateX(0);    opacity: 1; }
+        }
+
+        /* ── FOOTER ──────────────────────────────────────────────── */
+        .main-footer {
+            background: rgba(10, 15, 30, 0.95);
+            border-top: 1px solid var(--border-glass);
+            padding: 1.5rem 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .footer-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .footer-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.87rem;
+            color: var(--text-muted);
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 1.25rem;
+        }
+
+        .footer-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.82rem;
+            transition: color 0.2s;
+        }
+        .footer-links a:hover { color: var(--brand-primary); }
+
+        .footer-copy {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* ── RESPONSIVE NAVBAR ───────────────────────────────────── */
+        @media (max-width: 768px) {
+            .navbar-toggler-custom { display: flex; }
+            .main-nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: rgba(10, 15, 30, 0.97);
+                backdrop-filter: blur(20px);
+                flex-direction: column;
+                padding: 1rem 1.5rem;
+                border-bottom: 1px solid var(--border-glass);
+                gap: 0.25rem;
+            }
+            .main-nav-links.open { display: flex; }
+            .nav-link-custom { justify-content: flex-start; }
+        }
+    </style>
+
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+    <!-- ── NAVBAR ─────────────────────────────────────────────── -->
+    <nav class="main-navbar">
+        <div class="container">
+            <a class="navbar-brand-custom" href="{{ url_for('main.index') }}">
+                <div class="brand-icon">🤖</div>
+                <div class="brand-text">Interview<span>AI</span></div>
+            </a>
+
+            <button class="navbar-toggler-custom" id="navToggler" aria-label="Toggle navigation">
+                <i class="bi bi-list"></i>
+            </button>
+
+            <ul class="main-nav-links" id="mainNavLinks">
+                {% if session.get('user_id') %}
+                <li>
+                    <a class="nav-link-custom" href="{{ url_for('main.dashboard') }}">
+                        <i class="bi bi-speedometer2"></i> Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a class="nav-link-custom" href="{{ url_for('interview.start') }}">
+                        <i class="bi bi-play-circle"></i> New Interview
+                    </a>
+                </li>
+                <li>
+                    <span class="nav-link-custom nav-user-badge">
+                        <i class="bi bi-person-circle"></i> {{ session.get('username') }}
+                    </span>
+                </li>
+                <li>
+                    <a class="nav-link-custom" href="{{ url_for('auth.logout') }}" style="color: var(--brand-danger) !important;">
+                        <i class="bi bi-box-arrow-right"></i> Logout
+                    </a>
+                </li>
+                {% else %}
+                <li>
+                    <a class="nav-link-custom" href="{{ url_for('auth.login') }}">
+                        <i class="bi bi-box-arrow-in-right"></i> Login
+                    </a>
+                </li>
+                <li>
+                    <a class="btn-nav-primary" href="{{ url_for('auth.register') }}">
+                        <i class="bi bi-person-plus"></i> Get Started Free
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+
+    <!-- ── FLASH MESSAGES ─────────────────────────────────────── -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="flash-container" id="flashContainer">
+        {% for category, message in messages %}
+        <div class="flash-toast {{ category }}" id="toast-{{ loop.index }}">
+            <span class="toast-icon">
+                {% if category == 'success' %}<i class="bi bi-check-circle-fill"></i>
+                {% elif category == 'danger' %}<i class="bi bi-x-circle-fill"></i>
+                {% elif category == 'warning' %}<i class="bi bi-exclamation-triangle-fill"></i>
+                {% else %}<i class="bi bi-info-circle-fill"></i>{% endif %}
+            </span>
+            <span>{{ message }}</span>
+            <button class="flash-close" onclick="this.closest('.flash-toast').remove()">
+                <i class="bi bi-x"></i>
+            </button>
+        </div>
+        {% endfor %}
+    </div>
+    <script>
+        // Auto-dismiss toasts after 4 seconds
+        document.querySelectorAll('.flash-toast').forEach(function(t) {
+            setTimeout(function() {
+                t.style.transition = 'opacity 0.4s, transform 0.4s';
+                t.style.opacity = '0';
+                t.style.transform = 'translateX(100%)';
+                setTimeout(function() { t.remove(); }, 400);
+            }, 4000);
+        });
+    </script>
+    {% endif %}
+    {% endwith %}
+
+    <!-- ── MAIN CONTENT ───────────────────────────────────────── -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- ── FOOTER ──────────────────────────────────────────────── -->
+    <footer class="main-footer">
+        <div class="container">
+            <div class="footer-inner">
+                <div class="footer-brand">
+                    <div class="brand-icon" style="width:28px;height:28px;font-size:0.9rem;">🤖</div>
+                    <span>InterviewAI Pro — Final Year Project &copy; 2026</span>
+                </div>
+                <div class="footer-links">
+                    <a href="{{ url_for('main.index') }}">Home</a>
+                    {% if session.get('user_id') %}
+                    <a href="{{ url_for('main.dashboard') }}">Dashboard</a>
+                    <a href="{{ url_for('interview.start') }}">Start Interview</a>
+                    {% endif %}
+                </div>
+                <div class="footer-copy">Built with ❤️ using Flask + AI</div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Mobile nav toggle
+        document.getElementById('navToggler').addEventListener('click', function() {
+            document.getElementById('mainNavLinks').classList.toggle('open');
+        });
+    </script>
+
+    {% block extra_js %}{% endblock %}
+</body>
+
+</html>

@@ -1,0 +1,1088 @@
+{% extends "base.html" %}
+
+{% block title %}InterviewAI Pro — AI-Powered Mock Interview Platform{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ── LANDING PAGE STYLES ─────────────────────────────────────── */
+
+    /* Hero */
+    .hero-section {
+        min-height: 92vh;
+        display: flex;
+        align-items: center;
+        padding: 5rem 0 3rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .hero-bg-glow {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(80px);
+        opacity: 0.5;
+        pointer-events: none;
+    }
+
+    .hero-bg-glow.g1 {
+        width: 500px;
+        height: 500px;
+        background: radial-gradient(circle, rgba(99, 102, 241, 0.25) 0%, transparent 70%);
+        top: -100px;
+        left: -100px;
+    }
+
+    .hero-bg-glow.g2 {
+        width: 400px;
+        height: 400px;
+        background: radial-gradient(circle, rgba(139, 92, 246, 0.2) 0%, transparent 70%);
+        bottom: -50px;
+        right: -80px;
+    }
+
+    .hero-bg-glow.g3 {
+        width: 300px;
+        height: 300px;
+        background: radial-gradient(circle, rgba(6, 182, 212, 0.15) 0%, transparent 70%);
+        top: 40%;
+        left: 60%;
+    }
+
+    .hero-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: rgba(99, 102, 241, 0.12);
+        border: 1px solid rgba(99, 102, 241, 0.3);
+        border-radius: 50px;
+        padding: 0.35rem 1rem;
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: #a5b4fc;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        margin-bottom: 1.5rem;
+    }
+
+    .hero-title {
+        font-family: 'Outfit', sans-serif;
+        font-weight: 800;
+        font-size: clamp(2.4rem, 5.5vw, 4rem);
+        line-height: 1.15;
+        color: #f1f5f9;
+        margin-bottom: 1.5rem;
+    }
+
+    .hero-title .grad {
+        background: linear-gradient(135deg, #6366f1 0%, #a78bfa 50%, #06b6d4 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .hero-subtitle {
+        font-size: 1.1rem;
+        color: #94a3b8;
+        line-height: 1.8;
+        margin-bottom: 2.5rem;
+        max-width: 540px;
+    }
+
+    .hero-cta-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-bottom: 3rem;
+    }
+
+    .btn-primary-hero {
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 0.85rem 2rem;
+        font-size: 1rem;
+        font-weight: 700;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        box-shadow: 0 8px 30px rgba(99, 102, 241, 0.45);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-primary-hero::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: rgba(255, 255, 255, 0.1);
+        opacity: 0;
+        transition: opacity 0.2s;
+    }
+
+    .btn-primary-hero:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 40px rgba(99, 102, 241, 0.6);
+        color: white;
+    }
+
+    .btn-primary-hero:hover::after {
+        opacity: 1;
+    }
+
+    .btn-outline-hero {
+        background: rgba(255, 255, 255, 0.04);
+        color: #e2e8f0;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 12px;
+        padding: 0.85rem 2rem;
+        font-size: 1rem;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(8px);
+    }
+
+    .btn-outline-hero:hover {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(99, 102, 241, 0.5);
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    .hero-trust-badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        align-items: center;
+    }
+
+    .trust-badge {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.8rem;
+        color: #64748b;
+        font-weight: 500;
+    }
+
+    .trust-badge i {
+        color: #10b981;
+        font-size: 0.9rem;
+    }
+
+    /* Hero Visual */
+    .hero-visual {
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .hero-card-mockup {
+        background: rgba(26, 34, 53, 0.9);
+        border: 1px solid rgba(99, 102, 241, 0.25);
+        border-radius: 20px;
+        padding: 1.75rem;
+        width: 100%;
+        max-width: 420px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 80px rgba(99, 102, 241, 0.12);
+        backdrop-filter: blur(12px);
+        animation: floatCard 4s ease-in-out infinite;
+    }
+
+    @keyframes floatCard {
+
+        0%,
+        100% {
+            transform: translateY(0px);
+        }
+
+        50% {
+            transform: translateY(-12px);
+        }
+    }
+
+    .mockup-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1.25rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    }
+
+    .mockup-dots {
+        display: flex;
+        gap: 6px;
+    }
+
+    .mockup-dots span {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+    }
+
+    .mockup-dots span:nth-child(1) {
+        background: #ef4444;
+    }
+
+    .mockup-dots span:nth-child(2) {
+        background: #f59e0b;
+    }
+
+    .mockup-dots span:nth-child(3) {
+        background: #10b981;
+    }
+
+    .mockup-title {
+        font-size: 0.78rem;
+        color: #64748b;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+    }
+
+    .mockup-question {
+        background: rgba(99, 102, 241, 0.08);
+        border: 1px solid rgba(99, 102, 241, 0.2);
+        border-radius: 10px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        font-size: 0.88rem;
+        color: #e2e8f0;
+        line-height: 1.6;
+    }
+
+    .mockup-question-label {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: #6366f1;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .mockup-emotion-row {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .emo-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 30px;
+        padding: 0.25rem 0.65rem;
+        font-size: 0.72rem;
+        color: #94a3b8;
+    }
+
+    .emo-chip.active {
+        background: rgba(16, 185, 129, 0.1);
+        border-color: rgba(16, 185, 129, 0.3);
+        color: #10b981;
+    }
+
+    .mockup-score-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 0.5rem;
+    }
+
+    .score-mini {
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 8px;
+        padding: 0.6rem;
+        text-align: center;
+    }
+
+    .score-mini .val {
+        font-family: 'Outfit', sans-serif;
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #a78bfa;
+    }
+
+    .score-mini .lbl {
+        font-size: 0.65rem;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+
+    .floating-badge {
+        position: absolute;
+        background: rgba(26, 34, 53, 0.92);
+        border: 1px solid rgba(16, 185, 129, 0.3);
+        border-radius: 12px;
+        padding: 0.6rem 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.8rem;
+        color: #10b981;
+        font-weight: 600;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        backdrop-filter: blur(8px);
+        white-space: nowrap;
+        animation: badgePop 3s ease-in-out infinite;
+    }
+
+    .floating-badge.b1 {
+        top: -20px;
+        right: -30px;
+        animation-delay: 0.5s;
+    }
+
+    .floating-badge.b2 {
+        bottom: 40px;
+        left: -40px;
+        animation-delay: 1.5s;
+        color: #6366f1;
+        border-color: rgba(99, 102, 241, 0.3);
+    }
+
+    @keyframes badgePop {
+
+        0%,
+        100% {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.04);
+        }
+    }
+
+    /* ── STATS STRIP ─────────────────────────────────────────────── */
+    .stats-strip {
+        padding: 3rem 0;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        background: rgba(255, 255, 255, 0.015);
+    }
+
+    .stat-item {
+        text-align: center;
+        padding: 1rem;
+    }
+
+    .stat-num {
+        font-family: 'Outfit', sans-serif;
+        font-weight: 800;
+        font-size: 2.4rem;
+        background: linear-gradient(135deg, #6366f1 0%, #a78bfa 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        line-height: 1;
+        margin-bottom: 0.4rem;
+    }
+
+    .stat-lbl {
+        font-size: 0.85rem;
+        color: #64748b;
+        font-weight: 500;
+    }
+
+    .stat-sub {
+        font-size: 0.75rem;
+        color: #475569;
+        margin-top: 0.15rem;
+    }
+
+    /* ── FEATURE CARDS ───────────────────────────────────────────── */
+    .section-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: rgba(99, 102, 241, 0.08);
+        border: 1px solid rgba(99, 102, 241, 0.2);
+        border-radius: 50px;
+        padding: 0.3rem 0.85rem;
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: #a5b4fc;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        margin-bottom: 1rem;
+    }
+
+    .section-title {
+        font-family: 'Outfit', sans-serif;
+        font-weight: 800;
+        font-size: clamp(1.8rem, 4vw, 2.6rem);
+        color: #f1f5f9;
+        margin-bottom: 0.75rem;
+        line-height: 1.2;
+    }
+
+    .section-title .grad {
+        background: linear-gradient(135deg, #6366f1 0%, #a78bfa 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .section-sub {
+        color: #64748b;
+        font-size: 1rem;
+        line-height: 1.7;
+        max-width: 560px;
+        margin: 0 auto;
+    }
+
+    .feature-glass-card {
+        background: rgba(26, 34, 53, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        border-radius: 18px;
+        padding: 1.75rem;
+        height: 100%;
+        transition: all 0.35s ease;
+        position: relative;
+        overflow: hidden;
+        backdrop-filter: blur(8px);
+    }
+
+    .feature-glass-card::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.06) 0%, transparent 60%);
+        opacity: 0;
+        transition: opacity 0.35s ease;
+    }
+
+    .feature-glass-card:hover {
+        border-color: rgba(99, 102, 241, 0.3);
+        transform: translateY(-6px);
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3), 0 0 40px rgba(99, 102, 241, 0.1);
+    }
+
+    .feature-glass-card:hover::before {
+        opacity: 1;
+    }
+
+    .feature-icon-wrap {
+        width: 56px;
+        height: 56px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-bottom: 1.15rem;
+        position: relative;
+    }
+
+    .feature-icon-wrap.purple {
+        background: rgba(99, 102, 241, 0.15);
+        box-shadow: 0 4px 16px rgba(99, 102, 241, 0.2);
+    }
+
+    .feature-icon-wrap.cyan {
+        background: rgba(6, 182, 212, 0.12);
+        box-shadow: 0 4px 16px rgba(6, 182, 212, 0.2);
+    }
+
+    .feature-icon-wrap.green {
+        background: rgba(16, 185, 129, 0.12);
+        box-shadow: 0 4px 16px rgba(16, 185, 129, 0.2);
+    }
+
+    .feature-icon-wrap.orange {
+        background: rgba(245, 158, 11, 0.12);
+        box-shadow: 0 4px 16px rgba(245, 158, 11, 0.2);
+    }
+
+    .feature-icon-wrap.pink {
+        background: rgba(236, 72, 153, 0.12);
+        box-shadow: 0 4px 16px rgba(236, 72, 153, 0.15);
+    }
+
+    .feature-icon-wrap.blue {
+        background: rgba(59, 130, 246, 0.12);
+        box-shadow: 0 4px 16px rgba(59, 130, 246, 0.2);
+    }
+
+    .feature-card-title {
+        font-weight: 700;
+        font-size: 1.05rem;
+        color: #e2e8f0;
+        margin-bottom: 0.6rem;
+    }
+
+    .feature-card-desc {
+        font-size: 0.87rem;
+        color: #64748b;
+        line-height: 1.7;
+    }
+
+    .feature-list {
+        list-style: none;
+        padding: 0;
+        margin: 0.85rem 0 0;
+    }
+
+    .feature-list li {
+        font-size: 0.82rem;
+        color: #94a3b8;
+        padding: 0.3rem 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .feature-list li::before {
+        content: '';
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: #6366f1;
+        flex-shrink: 0;
+    }
+
+    /* ── ROUND TIMELINE ──────────────────────────────────────────── */
+    .rounds-section {
+        padding: 6rem 0;
+    }
+
+    .round-card {
+        background: rgba(26, 34, 53, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        border-radius: 18px;
+        padding: 1.75rem;
+        position: relative;
+        transition: all 0.3s ease;
+        height: 100%;
+    }
+
+    .round-card:hover {
+        border-color: rgba(99, 102, 241, 0.3);
+        transform: translateY(-4px);
+    }
+
+    .round-number {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Outfit', sans-serif;
+        font-size: 1.2rem;
+        font-weight: 800;
+        margin-bottom: 1rem;
+    }
+
+    .round-number.r1 {
+        background: rgba(99, 102, 241, 0.15);
+        color: #6366f1;
+    }
+
+    .round-number.r2 {
+        background: rgba(16, 185, 129, 0.12);
+        color: #10b981;
+    }
+
+    .round-number.r3 {
+        background: rgba(245, 158, 11, 0.12);
+        color: #f59e0b;
+    }
+
+    .round-badge {
+        display: inline-block;
+        padding: 0.2rem 0.65rem;
+        border-radius: 30px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin-bottom: 0.75rem;
+    }
+
+    .round-badge.tech {
+        background: rgba(99, 102, 241, 0.12);
+        color: #a5b4fc;
+    }
+
+    .round-badge.coding {
+        background: rgba(16, 185, 129, 0.1);
+        color: #6ee7b7;
+    }
+
+    .round-badge.hr {
+        background: rgba(245, 158, 11, 0.1);
+        color: #fcd34d;
+    }
+
+    .round-title {
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: #e2e8f0;
+        margin-bottom: 0.5rem;
+    }
+
+    .round-desc {
+        font-size: 0.85rem;
+        color: #64748b;
+        line-height: 1.6;
+    }
+
+    /* ── BADGES ──────────────────────────────────────────────────── */
+    .badges-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+
+    .badge-item {
+        background: rgba(26, 34, 53, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        border-radius: 14px;
+        padding: 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .badge-item:hover {
+        border-color: rgba(99, 102, 241, 0.3);
+        transform: translateX(4px);
+    }
+
+    .badge-emoji {
+        font-size: 2rem;
+        line-height: 1;
+    }
+
+    .badge-name {
+        font-weight: 700;
+        font-size: 0.95rem;
+        color: #e2e8f0;
+    }
+
+    .badge-crit {
+        font-size: 0.78rem;
+        color: #64748b;
+        margin-top: 0.15rem;
+    }
+
+    /* ── CTA ─────────────────────────────────────────────────────── */
+    .cta-section {
+        padding: 6rem 0;
+        text-align: center;
+    }
+
+    .cta-inner {
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.08) 100%);
+        border: 1px solid rgba(99, 102, 241, 0.2);
+        border-radius: 28px;
+        padding: 4rem 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .cta-inner::before {
+        content: '';
+        position: absolute;
+        top: -80px;
+        left: 50%;
+        width: 400px;
+        height: 400px;
+        background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%);
+        transform: translateX(-50%);
+        pointer-events: none;
+    }
+
+    .cta-title {
+        font-family: 'Outfit', sans-serif;
+        font-weight: 800;
+        font-size: clamp(1.8rem, 4vw, 2.8rem);
+        color: #f1f5f9;
+        margin-bottom: 1rem;
+    }
+
+    .cta-sub {
+        color: #64748b;
+        font-size: 1.05rem;
+        margin-bottom: 2.5rem;
+    }
+
+    /* Sections spacing */
+    .features-section,
+    .badges-section,
+    .rounds-section {
+        padding: 5.5rem 0;
+    }
+
+    .text-center-block {
+        text-align: center;
+        margin-bottom: 3.5rem;
+    }
+
+    /* ── RESPONSIVE ──────────────────────────────────────────────── */
+    @media (max-width: 768px) {
+        .hero-section {
+            padding: 3rem 0 2rem;
+        }
+
+        .hero-visual {
+            margin-top: 3rem;
+        }
+
+        .stats-strip .stat-num {
+            font-size: 1.8rem;
+        }
+
+        .badges-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .floating-badge {
+            display: none;
+        }
+
+        .hero-cta-group {
+            flex-direction: column;
+        }
+
+        .btn-primary-hero,
+        .btn-outline-hero {
+            justify-content: center;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- ══ HERO SECTION ══════════════════════════════════════════════ -->
+<section class="hero-section">
+    <div class="hero-bg-glow g1"></div>
+    <div class="hero-bg-glow g2"></div>
+    <div class="hero-bg-glow g3"></div>
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6">
+                <div class="hero-eyebrow">
+                    <i class="bi bi-stars"></i> Powered by Google Gemini AI
+                </div>
+                <h1 class="hero-title">
+                    Ace Every Interview with <span class="grad">AI-Driven</span> Mock Sessions
+                </h1>
+                <p class="hero-subtitle">
+                    Experience the most realistic mock interviews — with live emotion detection, adaptive AI questions
+                    tailored to your resume, and detailed performance analytics. Be interview-ready faster.
+                </p>
+                <div class="hero-cta-group">
+                    <a href="{{ url_for('auth.register') }}" class="btn-primary-hero">
+                        <i class="bi bi-rocket-takeoff-fill"></i> Start Free Interview
+                    </a>
+                    <a href="{{ url_for('auth.login') }}" class="btn-outline-hero">
+                        <i class="bi bi-box-arrow-in-right"></i> Sign In
+                    </a>
+                </div>
+                <div class="hero-trust-badges">
+                    <div class="trust-badge"><i class="bi bi-check-circle-fill"></i> No credit card required</div>
+                    <div class="trust-badge"><i class="bi bi-check-circle-fill"></i> AI-scored answers</div>
+                    <div class="trust-badge"><i class="bi bi-check-circle-fill"></i> Instant PDF report</div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="hero-visual">
+                    <div class="floating-badge b1">
+                        <i class="bi bi-graph-up-arrow"></i> Score: 8.5/10
+                    </div>
+                    <div class="floating-badge b2">
+                        <i class="bi bi-emoji-smile"></i> Emotion: Confident
+                    </div>
+                    <div class="hero-card-mockup">
+                        <div class="mockup-header">
+                            <div class="mockup-dots">
+                                <span></span><span></span><span></span>
+                            </div>
+                            <div class="mockup-title">🎤 Live Interview Session</div>
+                        </div>
+                        <div class="mockup-question">
+                            <div class="mockup-question-label">🤖 AI Interviewer — Michael</div>
+                            Given your Python experience, how would you design a RESTful API that handles 10k requests
+                            per second with minimal latency?
+                        </div>
+                        <div class="mockup-emotion-row">
+                            <span class="emo-chip active">😊 Confident 78%</span>
+                            <span class="emo-chip">😐 Neutral 12%</span>
+                            <span class="emo-chip">🤔 Focused 10%</span>
+                        </div>
+                        <div class="mockup-score-row">
+                            <div class="score-mini">
+                                <div class="val">8.2</div>
+                                <div class="lbl">Technical</div>
+                            </div>
+                            <div class="score-mini">
+                                <div class="val">7.9</div>
+                                <div class="lbl">Coding</div>
+                            </div>
+                            <div class="score-mini">
+                                <div class="val">8.6</div>
+                                <div class="lbl">HR</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ══ STATS STRIP ════════════════════════════════════════════════ -->
+<section class="stats-strip">
+    <div class="container">
+        <div class="row g-3">
+            <div class="col-6 col-md-3">
+                <div class="stat-item">
+                    <div class="stat-num">15</div>
+                    <div class="stat-lbl">Questions Total</div>
+                    <div class="stat-sub">5 per round</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-item">
+                    <div class="stat-num">7</div>
+                    <div class="stat-lbl">Emotions Tracked</div>
+                    <div class="stat-sub">Real-time via DeepFace</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-item">
+                    <div class="stat-num">3</div>
+                    <div class="stat-lbl">Interview Rounds</div>
+                    <div class="stat-sub">Tech, Coding, HR</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-item">
+                    <div class="stat-num">AI</div>
+                    <div class="stat-lbl">Adaptive Questions</div>
+                    <div class="stat-sub">Google Gemini powered</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ══ 3-ROUND FLOW ═══════════════════════════════════════════════ -->
+<section class="rounds-section">
+    <div class="container">
+        <div class="text-center-block">
+            <div class="section-eyebrow"><i class="bi bi-arrow-right-circle"></i> Interview Flow</div>
+            <h2 class="section-title">Three Rounds. <span class="grad">One Complete</span> Assessment.</h2>
+            <p class="section-sub">Each round is fully adaptive — questions get harder as you perform better, simulating
+                real-world pressure.</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="round-card">
+                    <div class="round-number r1">01</div>
+                    <span class="round-badge tech">Technical Round</span>
+                    <h3 class="round-title">Skills-Based Deep Dive</h3>
+                    <p class="round-desc">Persona: <strong style="color:#a5b4fc">Michael</strong> — Senior Technical
+                        Architect. AI generates questions directly from your resume skills with adaptive difficulty.
+                        Conceptual → Scenario-based → System design.</p>
+                    <ul class="feature-list">
+                        <li>Resume-parsed &amp; skill-targeted questions</li>
+                        <li>Difficulty auto-adjusts on performance</li>
+                        <li>AI evaluates with Gemini (0–10 score)</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="round-card">
+                    <div class="round-number r2">02</div>
+                    <span class="round-badge coding">Coding Round</span>
+                    <h3 class="round-title">HackerRank-Style Challenges</h3>
+                    <p class="round-desc">Monaco Editor (VS Code in browser). Write code in Python, JavaScript, C++, or
+                        Java. Test cases run instantly with real execution time, memory usage, and complexity analysis.
+                    </p>
+                    <ul class="feature-list">
+                        <li>Live code execution with test cases</li>
+                        <li>3-level progressive hint system</li>
+                        <li>Multi-language support</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="round-card">
+                    <div class="round-number r3">03</div>
+                    <span class="round-badge hr">HR Round</span>
+                    <h3 class="round-title">Behavioral Assessment</h3>
+                    <p class="round-desc">Persona: <strong style="color:#fcd34d">Sarah</strong> — HR Director.
+                        STAR-method questions covering teamwork, conflict resolution, leadership, and ethics. Tone
+                        analysis included.</p>
+                    <ul class="feature-list">
+                        <li>STAR framework guidance</li>
+                        <li>Voice sentiment &amp; confidence analysis</li>
+                        <li>Leadership &amp; cultural fit scoring</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ══ FEATURES GRID ══════════════════════════════════════════════ -->
+<section class="features-section"
+    style="background: rgba(255,255,255,0.015); border-top: 1px solid rgba(255,255,255,0.05);">
+    <div class="container">
+        <div class="text-center-block">
+            <div class="section-eyebrow"><i class="bi bi-cpu"></i> Platform Features</div>
+            <h2 class="section-title">Everything You Need to <span class="grad">Succeed</span></h2>
+            <p class="section-sub">A complete toolkit that mirrors what real enterprise hiring platforms do — designed
+                for you to win.</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-4">
+                <div class="feature-glass-card">
+                    <div class="feature-icon-wrap purple">🧠</div>
+                    <div class="feature-card-title">Adaptive AI Questions</div>
+                    <p class="feature-card-desc">Google Gemini generates personalized questions from your actual resume
+                        — harder if you're doing well, easier if you're struggling.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <div class="feature-glass-card">
+                    <div class="feature-icon-wrap cyan">😊</div>
+                    <div class="feature-card-title">Real-Time Emotion Detection</div>
+                    <p class="feature-card-desc">DeepFace + OpenCV monitors your facial expressions every 3 seconds.
+                        Tracks 7 emotions and builds a confidence timeline.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <div class="feature-glass-card">
+                    <div class="feature-icon-wrap green">🎤</div>
+                    <div class="feature-card-title">Voice Analysis</div>
+                    <p class="feature-card-desc">librosa extracts pitch, energy, MFCC and speaking rate to score your
+                        delivery confidence. Real-time speech-to-text transcription included.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <div class="feature-glass-card">
+                    <div class="feature-icon-wrap orange">💻</div>
+                    <div class="feature-card-title">Monaco Code Editor</div>
+                    <p class="feature-card-desc">The same editor as VS Code. Execute Python, JS, C++ and Java with real
+                        test case validation, execution time, memory usage and complexity analysis.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <div class="feature-glass-card">
+                    <div class="feature-icon-wrap pink">🔒</div>
+                    <div class="feature-card-title">AI Proctoring</div>
+                    <p class="feature-card-desc">Face presence is monitored continuously. Multiple faces = violation
+                        logged instantly. Identity verified against reference photo using DeepFace.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <div class="feature-glass-card">
+                    <div class="feature-icon-wrap blue">📄</div>
+                    <div class="feature-card-title">Instant PDF Report</div>
+                    <p class="feature-card-desc">Auto-generated comprehensive report with score breakdown, emotion
+                        timeline, Q&amp;A feedback, and recommendations — ready to download.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ══ BADGES (GAMIFICATION) ═════════════════════════════════════ -->
+<section class="badges-section">
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-5">
+                <div class="section-eyebrow"><i class="bi bi-trophy"></i> Gamification System</div>
+                <h2 class="section-title">Earn <span class="grad">Badges</span> &amp; Level Up</h2>
+                <p class="section-sub" style="margin: 0; max-width: 100%;">
+                    Complete interviews, earn XP, unlock achievement badges. Track your progress and climb the global
+                    leaderboard. Every interview makes you better.
+                </p>
+                <div style="margin-top:2rem;">
+                    <div
+                        style="background: rgba(26,34,53,0.6); border: 1px solid rgba(255,255,255,0.07); border-radius: 14px; padding: 1.25rem;">
+                        <div
+                            style="font-size:0.8rem; color: #64748b; font-weight:600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.75rem;">
+                            XP &amp; Level System</div>
+                        <div style="font-size:0.88rem; color: #94a3b8; line-height: 1.8;">
+                            <div>📈 <strong style="color:#e2e8f0">10 XP</strong> per score point earned</div>
+                            <div>⚡ <strong style="color:#e2e8f0">Level</strong> = 1 + (Total XP ÷ 1000)</div>
+                            <div>🏆 Global leaderboard with live rankings</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-7">
+                <div class="badges-grid">
+                    <div class="badge-item">
+                        <div class="badge-emoji">⭐</div>
+                        <div>
+                            <div class="badge-name">Tech Wizard</div>
+                            <div class="badge-crit">Score ≥ 8.0 in Technical Round</div>
+                        </div>
+                    </div>
+                    <div class="badge-item">
+                        <div class="badge-emoji">💻</div>
+                        <div>
+                            <div class="badge-name">Code Master</div>
+                            <div class="badge-crit">Score ≥ 9.0 in Coding Round</div>
+                        </div>
+                    </div>
+                    <div class="badge-item">
+                        <div class="badge-emoji">🗣️</div>
+                        <div>
+                            <div class="badge-name">People Person</div>
+                            <div class="badge-crit">Score ≥ 8.0 in HR Round</div>
+                        </div>
+                    </div>
+                    <div class="badge-item">
+                        <div class="badge-emoji">🏆</div>
+                        <div>
+                            <div class="badge-name">Interview Pro</div>
+                            <div class="badge-crit">Overall Score ≥ 7.0 / 10</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ══ CTA SECTION ════════════════════════════════════════════════ -->
+<section class="cta-section">
+    <div class="container">
+        <div class="cta-inner">
+            <div class="section-eyebrow" style="margin: 0 auto 1.25rem; width: fit-content;"><i
+                    class="bi bi-rocket-takeoff"></i> Get Started Today</div>
+            <h2 class="cta-title">Ready to Land Your Dream Job?</h2>
+            <p class="cta-sub">Join our platform. Practice. Get scored. Improve. Repeat. No more surprise interview
+                questions.</p>
+            <div class="hero-cta-group" style="justify-content: center;">
+                <a href="{{ url_for('auth.register') }}" class="btn-primary-hero">
+                    <i class="bi bi-person-plus-fill"></i> Create Free Account
+                </a>
+                <a href="{{ url_for('auth.login') }}" class="btn-outline-hero">
+                    <i class="bi bi-box-arrow-in-right"></i> Already have an account? Login
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
